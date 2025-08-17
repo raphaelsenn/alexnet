@@ -1,19 +1,18 @@
 import os
 
-from torch.utils.data import Dataset
+import torch
+from torch.utils.data import Subset
 
 from torchvision import datasets
-import torchvision
-import torchvision.transforms as TF
 
 
 def load_imagenet1k_mini(
         root_dir: str='./imagenet-mini/',
-        train_val_test: bool=False,
-        transform=None
+        transform=None,
+        val_size: float | None = None, 
     ) -> tuple:
 
-    train_set = datasets.ImageFolder(
+    dataset = datasets.ImageFolder(
         os.path.join(root_dir, 'train'), 
         transform
     )    
@@ -21,5 +20,18 @@ def load_imagenet1k_mini(
         os.path.join(root_dir, 'val'),
         transform
     )    
+    
+    if val_size:
+        assert 0 < val_size < 1, 'Validation size needs to be between 0 and 1'
 
-    return train_set, test_set
+        train_size = int((1 - val_size) * len(dataset))
+        idx = torch.randperm(len(dataset))
+
+        train_idx = idx[:train_size]
+        val_idx = idx[train_size:]
+
+        train_set = Subset(dataset, train_idx)
+        val_set = Subset(dataset, val_idx)
+        return train_set, val_set, test_set
+
+    return dataset, test_set
