@@ -14,7 +14,7 @@ from imagenet import load_imagenet1k_mini
 # Hyperparameters and Settings
 EPOCHS = 2
 SEED = 42
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'mps')
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 TORCH_CUDA = DEVICE.type == 'cuda'
 
 torch.manual_seed(SEED)
